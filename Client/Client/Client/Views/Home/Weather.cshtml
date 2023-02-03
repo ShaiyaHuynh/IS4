@@ -1,0 +1,19 @@
+﻿@model List<Client.Models.WeatherData>
+
+@{
+    ViewBag.Title = "Weather";
+    Layout = "_Layout";
+}
+<h1>Weather</h1>
+
+<table>
+    @foreach(var item in Model)
+    {
+        <tr>
+            <td>@item.TemperatureF</td>
+            <td>@item.TemperatureC</td>
+            <td>@item.Summary</td>
+        </tr>
+    }
+
+</table>
