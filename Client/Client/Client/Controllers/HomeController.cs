@@ -2,16 +2,21 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using Newtonsoft.Json;
+using Client.Services;
+using IdentityModel.Client;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Client.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly ITokenService _tokenService;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, ITokenService tokenService)
         {
             _logger = logger;
+            _tokenService = tokenService;
         }
 
         public IActionResult Index()
@@ -24,11 +29,15 @@ namespace Client.Controllers
             return View();
         }
 
+        [Authorize]
         public async Task<IActionResult> Weather()
         {
             var data = new List<WeatherData>();
             using (var client = new HttpClient())
             {
+                var tokenResponse = await _tokenService.GetToken("API.read");
+                client.SetBearerToken(tokenResponse.AccessToken);
+
                 var result = client.GetAsync("https://localhost:5001/WeatherForecast").Result;
 
                 if (result.IsSuccessStatusCode)

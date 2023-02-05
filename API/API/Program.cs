@@ -7,21 +7,20 @@ namespace API
 			var builder = WebApplication.CreateBuilder(args);
 
 			// Add services to the container.
-
-			builder.Services.AddControllers();
 			builder.Services.AddAuthentication("Bearer")
 				.AddIdentityServerAuthentication("Bearer", configureOptions =>
 				{
 					configureOptions.ApiName = "API";
 					configureOptions.Authority = "https://localhost:5000";
+					configureOptions.RequireHttpsMetadata = false;
 				});
 
-			builder.Services.AddControllers();
 			// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 			builder.Services.AddEndpointsApiExplorer();
 			builder.Services.AddSwaggerGen();
+            builder.Services.AddControllers();
 
-			var app = builder.Build();
+            var app = builder.Build();
 
 			// Configure the HTTP request pipeline.
 			if (app.Environment.IsDevelopment())
@@ -29,8 +28,8 @@ namespace API
 				app.UseSwagger();
 				app.UseSwaggerUI();
 			}
-
-			app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
+            app.UseRouting();
 
 			app.UseAuthentication();
 			app.UseAuthorization();

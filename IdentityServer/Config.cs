@@ -19,40 +19,52 @@ namespace IdentityServer
         public static IEnumerable<ApiScope> ApiScopes =>
             new ApiScope[]
             {
-                new ApiScope("scope1"),
-                new ApiScope("API"),
-                new ApiScope(name:"API.read"),
+                new ApiScope("API.write"),
+                new ApiScope("API.read"),
             };
 
+        public static IEnumerable<ApiResource> ApiResources => new[]
+            {
+              new ApiResource("API")
+              {
+                Scopes = new List<string> { "API.read", "API.write"},
+                ApiSecrets = new List<Secret> {new Secret("ScopeSecret".Sha256())},
+                UserClaims = new List<string> {"role"}
+              }
+            };
         public static IEnumerable<Client> Clients =>
             new Client[]
             {
                 // m2m client credentials flow client
                 new Client
                 {
-                    ClientId = "m2m.client",
+                    ClientId = "client.IdentityServerSettings",
                     ClientName = "Client Credentials Client",
 
                     AllowedGrantTypes = GrantTypes.ClientCredentials,
-                    ClientSecrets = { new Secret("511536EF-F270-4058-80CA-1C89C192F69A".Sha256()) },
+                    ClientSecrets = { new Secret("SuperSecretPassword".Sha256()) },
 
-                    AllowedScopes = { "scope1" }
+                    AllowedScopes = { "API.read" }
                 },
 
                 // interactive client using code flow + pkce
                 new Client
                 {
-                    ClientId = "API",
-                    ClientSecrets = { new Secret("49C1A7E1-0C79-4A89-A3D6-A37998FB86B0".Sha256()) },
-                    
+                    ClientId = "client.InteractiveServiceSettings",
+                    ClientSecrets = { new Secret("SuperSecretPassword".Sha256()) },
+
                     AllowedGrantTypes = GrantTypes.Code,
 
-                    RedirectUris = { "https://localhost:5003/signin-oidc" },
-                    FrontChannelLogoutUri = "https://localhost:5003/signout-oidc",
-                    PostLogoutRedirectUris = { "https://localhost:5003/signout-callback-oidc" },
+                    RedirectUris = { "https://localhost:5002/signin-oidc" },
+                    FrontChannelLogoutUri = "https://localhost:5002/signout-oidc",
+                    PostLogoutRedirectUris = { "https://localhost:5002/signout-callback-oidc" },
 
                     AllowOfflineAccess = true,
-                    AllowedScopes = { "openid", "profile", "scope2" }
+                    AllowedScopes = { "openid", "profile", "API.read" },
+                     
+                    RequirePkce = true,
+                    RequireConsent = true,
+                    AllowPlainTextPkce = false
                 },
             };
     }

@@ -25,7 +25,6 @@ namespace IdentityServer
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews();
 
             var builder = services.AddIdentityServer(options =>
             {
@@ -40,24 +39,27 @@ namespace IdentityServer
                 .AddTestUsers(TestUsers.Users);
 
             // in-memory, code config
-            builder.AddInMemoryIdentityResources(Config.IdentityResources);
-            builder.AddInMemoryApiScopes(Config.ApiScopes);
             builder.AddInMemoryClients(Config.Clients);
+            builder.AddInMemoryIdentityResources(Config.IdentityResources);
+            builder.AddInMemoryApiResources(Config.ApiResources);
+            builder.AddInMemoryApiScopes(Config.ApiScopes);
 
             // not recommended for production - you need to store your key material somewhere secure
             builder.AddDeveloperSigningCredential();
 
-            services.AddAuthentication()
-                .AddGoogle(options =>
-                {
-                    options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+            //services.AddAuthentication()
+            //    .AddGoogle(options =>
+            //    {
+            //        options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
 
-                    // register your IdentityServer with Google at https://console.developers.google.com
-                    // enable the Google+ API
-                    // set the redirect URI to https://localhost:5001/signin-google
-                    options.ClientId = "copy client ID from Google here";
-                    options.ClientSecret = "copy client secret from Google here";
-                });
+            //        // register your IdentityServer with Google at https://console.developers.google.com
+            //        // enable the Google+ API
+            //        // set the redirect URI to https://localhost:5001/signin-google
+            //        options.ClientId = "copy client ID from Google here";
+            //        options.ClientSecret = "copy client secret from Google here";
+            //    });
+
+            services.AddControllersWithViews();
         }
 
         public void Configure(IApplicationBuilder app)
